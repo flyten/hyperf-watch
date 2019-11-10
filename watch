@@ -69,6 +69,7 @@ function start()
 
 function watch()
 {
+    state();//watch add files
     global $hashes;
     foreach ($hashes as $pathname => $current_hash) {
         if (!file_exists($pathname)) {
@@ -78,7 +79,7 @@ function watch()
         $new_hash = file_hash($pathname);
         if ($new_hash != $current_hash) {
             change();
-            state();
+	    //state();
             break;
         }
     }
@@ -87,10 +88,16 @@ function watch()
 function state()
 {
     global $hashes;
+    $hashes_count = count($hashes);
     $files = php_files(WATCH_DIR);
     $hashes = array_combine($files, array_map('file_hash', $files));
     $count = count($hashes);
-    echo "📡 Watching $count files..." . PHP_EOL;
+    if($hashes_count==0){
+    	echo "📡 Watching $count files..." . PHP_EOL;
+    }else if($hashes_count!=$count){
+	echo ". Watching $count files,files add..." . PHP_EOL;
+	change();
+    }
 }
 
 function change()
